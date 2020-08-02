@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mygraf-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mygraf-app
+  template:
+    metadata:
+      name: mygraf-pod
+      labels:
+        app: mygraf-app
+    spec:
+      containers:
+      - name: mygraf
+        image: vimal13/grafana
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+         - name: grafpvc
+           mountPath: /var/lib/grafana/
+      volumes:
+      - name: grafpvc
+        persistantVolumeClaim:
+          claimName: grafpod-pvc

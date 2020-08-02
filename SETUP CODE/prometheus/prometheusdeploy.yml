@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myprom-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myprom-app
+  template:
+    metadata:
+      name: myprom-pod
+      labels:
+        app: myprom-app
+    spec:
+      containers:
+      - image: prom/prometheus
+        name: prometheus-pod
+        args:
+        - '--config.file=/prometheus.yml'
+        - --storage.tsdb.path='prometheus_data/
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - name: prome-pvc
+          mountPath: prometheus_data/
+        - name: prometheus-script
+          mountPath: /prometheus.yml
+          subPath: prometheus.yml  
+      volumes:
+      - name: prome-pvc
+        persistentVolumeClaim:
+          claimName: prompod-pvc
+      - name: prometheus-script
+        configMap:
+          name: prom-conf
